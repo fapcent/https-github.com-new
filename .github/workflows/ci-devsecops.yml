@@ -1,0 +1,33 @@
+name: DevSecOps CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-scan:
+    name: Build Docker Image and Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le code source
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Construire l'image Docker
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t generix-ai-agent:${{ github.sha }} .
+
+      # 3. Analyser l'image avec Trivy (Bloque si faille CRITIQUE ou HAUTE)
+      - name: Run Trivy vulnerability scanner
+        uses: aquasec/trivy-action@master
+        with:
+          image-ref: "generix-ai-agent:${{ github.sha }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"

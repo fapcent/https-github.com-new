@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generix-ai-agent-deployment
+spec:
+  replicas: 2 # Haute disponibilité : 2 conteneurs tourneront en parallèle
+  selector:
+    matchLabels:
+      app: ai-agent
+  template:
+    metadata:
+      labels:
+        app: ai-agent
+    spec:
+      containers:
+        - name: api-container
+          image: generix-ai-agent:v1
+          imagePullPolicy: IfNotPresent # Permet d'utiliser ton image locale
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: ai-agent-secrets # Fait le lien avec le fichier précédent
+          resources: # Bonne pratique DevOps : limiter la consommation RAM/CPU
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
