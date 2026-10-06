@@ -23,7 +23,7 @@ jobs:
 
       # 3. Analyser l'image avec Trivy (Bloque si faille CRITIQUE ou HAUTE)
       - name: Run Trivy vulnerability scanner
-        uses: aquasec/trivy-action@master
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: "generix-ai-agent:${{ github.sha }}"
           format: "table"
